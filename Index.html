@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>365 Love Note 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBIid_lzxHizoU7DzcH7Trg4fuf84p0zwc",
+  authDomain: "love-jar-notes-224cc.firebaseapp.com",
+  projectId: "love-jar-notes-224cc",
+  appId: "1:854059545863:web:ca26b50cd9aa6e4eb941a2"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+<style>
+  
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:url("Images/4358.jpg") no-repeat center center;
+  background-size:cover;
+}
+.screen{
+  color: whitesmoke;
+  display:none;
+  width:90%;
+  max-width:420px;
+  background:rgba(255, 255, 255, 0.132);
+  /* backdrop-filter:blur(18px); */
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 30px 60px rgba(0,40,120,.35);
+}
+.screen.active{display:block;}
+.center{text-align:center}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:14px;
+  background: linear-gradient(135deg, #0d256e, #6fa8ff);
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
+.back{
+  background:#e3ecff;
+  color:#1f3c88;
+}
+.heart-picker{
+  display:flex;
+  justify-content:space-around;
+  margin-top:18px;
+}
+.pick-heart{
+  font-size:38px;
+  cursor:pointer;
+  animation:heartFloat 3s ease-in-out infinite;
+  transition:transform .25s ease;
+}
+.pick-heart:hover{
+  transform:scale(1.35) translateY(-6px);
+}
+@keyframes heartFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+}
+
+#intro{
+  background: url("Images/download.jpg") no-repeat center center;
+  background-size: 100% 100%;
+  color: #666666;
+}
+
+
+/* ✨ Heart Frame Border for Notes */
+.note{
+   color: #666666;
+  position: relative;
+  background:#fff;
+  border-radius:18px;
+  padding: 50px 35px;
+  margin-top:20px;
+  opacity:0;
+  min-height: 150px;
+  box-sizing: border-box;
+}
+
+/* Main border frame */
+.note::before {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 15px;
+  right: 15px;
+  bottom: 25px;
+  border: 2.5px solid #2c2c2c;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+/* Double line effect */
+.note::after {
+  content: '';
+  position: absolute;
+  top: 29px;
+  left: 19px;
+  right: 19px;
+  bottom: 29px;
+  border: 1.5px solid #2c2c2c;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 6px;
+}
+
+/* Top-left hearts decoration - More Realistic */
+.note .hearts-top-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 80px;
+  z-index: 3;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80"><defs><linearGradient id="grad1" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff6b9d;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23c9184a;stop-opacity:1" /></linearGradient><linearGradient id="grad2" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23e63946;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23a4161a;stop-opacity:1" /></linearGradient><linearGradient id="grad3" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff758f;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23d62839;stop-opacity:1" /></linearGradient><linearGradient id="grad4" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff8fa3;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23d90429;stop-opacity:1" /></linearGradient></defs><path d="M 30 22 C 30 15 34 11 38 11 C 40.5 11 43 12.5 44 15 C 45 12.5 47.5 11 50 11 C 54 11 58 15 58 22 C 58 30 51 37 44 42 C 37 37 30 30 30 22 Z" fill="url(%23grad1)" stroke="%23a4133c" stroke-width="0.8"/><path d="M 42 11 C 42 7 45 4 48 4 C 49.8 4 51.5 5 52.5 6.5 C 53.5 5 55.2 4 57 4 C 60 4 63 7 63 11 C 63 16.5 58 21 52.5 24 C 47 21 42 16.5 42 11 Z" fill="url(%23grad2)" stroke="%23800f2f" stroke-width="0.6"/><path d="M 74 18 C 74 13 77 10 80 10 C 81.8 10 83.5 11 84.5 12.5 C 85.5 11 87.2 10 89 10 C 92 10 95 13 95 18 C 95 23.5 90 28 84.5 31 C 79 28 74 23.5 74 18 Z" fill="url(%23grad3)" stroke="%23b8405e" stroke-width="0.7"/><path d="M 17 60 C 17 56.5 19.5 54 22 54 C 23.3 54 24.5 54.7 25.2 55.8 C 25.9 54.7 27.1 54 28.4 54 C 30.9 54 33.4 56.5 33.4 60 C 33.4 64 29.8 67.5 25.2 69.5 C 20.6 67.5 17 64 17 60 Z" fill="url(%23grad4)" stroke="%23c9184a" stroke-width="0.6"/></svg>') no-repeat;
+  background-size: contain;
+}
+
+/* Bottom-right hearts decoration - More Realistic */
+.note .hearts-bottom-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 130px;
+  height: 95px;
+  z-index: 3;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 95"><defs><linearGradient id="grad5" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff6b9d;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23c9184a;stop-opacity:1" /></linearGradient><linearGradient id="grad6" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23e63946;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23a4161a;stop-opacity:1" /></linearGradient><linearGradient id="grad7" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff758f;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23d62839;stop-opacity:1" /></linearGradient><linearGradient id="grad8" x1="0%25" y1="0%25" x2="0%25" y2="100%25"><stop offset="0%25" style="stop-color:%23ff8fa3;stop-opacity:1" /><stop offset="100%25" style="stop-color:%23d90429;stop-opacity:1" /></linearGradient></defs><path d="M 72 58 C 72 49 77 44 82 44 C 85 44 88 45.5 89.5 48 C 91 45.5 94 44 97 44 C 102 44 107 49 107 58 C 107 69 98 78 89.5 84 C 81 78 72 69 72 58 Z" fill="url(%23grad5)" stroke="%23a4133c" stroke-width="0.9"/><path d="M 88 42 C 88 35 92 31 96 31 C 98.5 31 101 32.5 102.5 35 C 104 32.5 106.5 31 109 31 C 113 31 117 35 117 42 C 117 50.5 110 57.5 102.5 62 C 95 57.5 88 50.5 88 42 Z" fill="url(%23grad6)" stroke="%23800f2f" stroke-width="0.7"/><path d="M 105 70 C 105 65 108.5 62 112 62 C 114 62 116 63 117 64.8 C 118 63 120 62 122 62 C 125.5 62 129 65 129 70 C 129 76 124 81 117 84.5 C 110 81 105 76 105 70 Z" fill="url(%23grad7)" stroke="%23b8405e" stroke-width="0.8"/><path d="M 63 74 C 63 70 66 67 69 67 C 70.5 67 72 67.8 73 69.2 C 74 67.8 75.5 67 77 67 C 80 67 83 70 83 74 C 83 79 78.5 83.5 73 86.5 C 67.5 83.5 63 79 63 74 Z" fill="url(%23grad8)" stroke="%23c9184a" stroke-width="0.7"/></svg>') no-repeat;
+  background-size: contain;
+}
+
+.note-text{
+  position: relative;
+  z-index: 2;
+  font-size:22px;
+  line-height:1.6;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.reveal-fade{animation:fadeIn 1.4s forwards}
+.reveal-heart{animation:heartIn 1.4s forwards}
+.reveal-glow{animation:glowIn 1.4s forwards}
+.reveal-float{animation:floatIn 1.4s forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1}}
+@keyframes heartIn{0%{opacity:0;transform:scale(.6)}60%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes glowIn{from{opacity:0}to{opacity:1;box-shadow:0 0 25px rgba(100,150,255,.6)}}
+@keyframes floatIn{from{opacity:0;transform:translateY(50px)}to{opacity:1}}
+
+.pink{border-left:0;}
+.blue{border-left:0;}
+.green{border-left:0;}
+.yellow{border-left:0;}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .note {
+    padding: 40px 25px;
+    min-height: 120px;
+  }
+  
+  .note::before {
+    top: 20px;
+    left: 12px;
+    right: 12px;
+    bottom: 20px;
+  }
+  
+  .note::after {
+    top: 24px;
+    left: 16px;
+    right: 16px;
+    bottom: 24px;
+  }
+  
+  .note .hearts-top-left {
+    width: 80px;
+    height: 55px;
+  }
+  
+  .note .hearts-bottom-right {
+    width: 90px;
+    height: 65px;
+  }
+  
+  .note-text {
+    font-size: 18px;
+  }
+}
+
+
+/* From Uiverse.io by LilaRest */ 
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 25px 20px 22px;
+  box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+  background-color: #200e88;
+  border-color: #ffe2e2;
+  border-style: solid;
+  border-width: 9px;
+  border-radius: 35px;
+  font-size: 25px;
+  cursor: pointer;
+  font-weight: 900;
+  color: rgb(134, 124, 124);
+  font-family: monospace;
+  transition:
+    transform 400ms cubic-bezier(0.68, -0.55, 0.27, 2.5),
+    border-color 400ms ease-in-out,
+    background-color 400ms ease-in-out;
+  word-spacing: -2px;
+  float: right;
+}
+
+@keyframes movingBorders {
+  0% {
+    border-color: #fce4e4;
+  }
+
+  50% {
+    border-color: #ffd8d8;
+  }
+
+  90% {
+    border-color: #fce4e4;
+  }
+}
+
+.button:hover {
+  background-color:#0a4ba4;
+  transform: scale(105%);
+  animation: movingBorders 3s infinite;
+}
+
+.button svg {
+  margin-right: 11px;
+  fill: rgb(255, 110, 110);
+  transition: opacity 100ms ease-in-out;
+}
+
+.filled {
+  position: absolute;
+  opacity: 0;
+  top: 20px;
+  left: 22px;
+}
+
+@keyframes beatingHeart {
+  0% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  30% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.15);
+  }
+
+  60% {
+    transform: scale(1);
+  }
+}
+
+.button:hover .empty {
+  opacity: 0;
+}
+
+.button:hover .filled {
+  opacity: 1;
+  animation: beatingHeart 1.2s infinite;
+}
+.heart-btn{
+  padding:12px 18px 12px 48px;
+  font-size:16px;
+  cursor:pointer;
+  background-color:#0a4ba4;
+  border:2px solid #6fa8ff;
+  border-radius:14px;
+  /* SVG icon */
+  background-image:url("data:image/svg+xml;utf8,\<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\<path fill='%23ff4d6d' d='M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z'/>\</svg>");
+  background-repeat:no-repeat;
+  background-position:14px center;
+  background-size:22px;
+  color: whitesmoke;
+}
+
+.opened{float: none !important;width: 100% !important;}
+
+
+
+
+
+</style>
+</head>
+
+<body>
+
+  
+
+<!-- INTRO (UNCHANGED) -->
+<div id="intro" class="screen active center">
+  <h2>365 Love Note To You... 💖</h2>
+  <div style="text-align:justify;padding:5px;font-weight: 600;">
+    Inside this Web you will find three hundred sixty-five notes.
+    Each Morning you can pick one Heart and read it to start your day off with a smile.<br>
+    Only Once a day, Mah. No Cheating .<br>
+    I Love You 💕
+    <div style="padding:10px;font-weight:bold;">KEY :</div>
+    <li>
+      <ul>🩷 Reasons I Love You</ul>
+      <ul>💙 We're Doing This</ul>
+      <ul>💚 Quotes & Lyrics</ul>
+      <ul>💛 Memories</ul>
+    </li>
+  </div>
+  <!-- <button onclick="openJar()">Open it 💕</button> -->
+  <input
+  type="button"
+  class="heart-btn button"
+  value="Open it"
+  onclick="openJar()"
+/>
+
+</div>
+
+<!-- HOME -->
+<div id="home" class="screen center">
+  <div id="categoryPick" class="heart-picker">
+    <span class="pick-heart" onclick="pickByCategory('pink')">🩷</span>
+    <span class="pick-heart" onclick="pickByCategory('blue')">💙</span>
+    <span class="pick-heart" onclick="pickByCategory('green')">💚</span>
+    <span class="pick-heart" onclick="pickByCategory('yellow')">💛</span>
+  </div>
+
+  <p id="remainingCount"></p>
+
+  <p id="lockedMsg" style="display:none">
+    Aww… you already opened today 💕
+  </p>
+
+  <!-- <button>
+    View Opened Notes 📂
+  </button> -->
+
+   <input
+  type="button"
+  class="heart-btn button opened"
+  value="View Opened Notes"
+  id="viewBtn" style="display:none" onclick="go('categories')"
+/>
+
+  <div id="todayNote"></div>
+
+  <button id="backAfterRead" style="display:none" onclick="backAfterReading()">
+    Back to Home 💕
+  </button>
+</div>
+
+<!-- CATEGORIES -->
+<div id="categories" class="screen center">
+  <h3>Opened Notes 💖</h3>
+  <button onclick="openCategory('pink')">🩷 Reasons I Love You</button>
+  <button onclick="openCategory('blue')">💙 We're Doing This</button>
+  <button onclick="openCategory('green')">💚 Quotes & Lyrics</button>
+  <button onclick="openCategory('yellow')">💛 Memories</button>
+  <button class="back" onclick="go('home')">⬅ Back</button>
+</div>
+
+<!-- LIST -->
+<div id="list" class="screen">
+  <h3 id="listTitle"></h3>
+  <div id="listNotes"></div>
+  <button class="back" onclick="go('categories')">⬅ Back</button>
+</div>
+
+<script>
+const USER_ID="CK";
+
+const notes = [
+  // 🩷 Reasons I Love You (25)
+  {id:1,color:"pink",text:"You feel like home."},
+  {id:2,color:"pink",text:"Your smile fixes my bad days."},
+  {id:3,color:"pink",text:"You understand me without words."},
+  {id:4,color:"pink",text:"You make ordinary moments special."},
+  {id:5,color:"pink",text:"You believe in me even when I don't."},
+  {id:6,color:"pink",text:"You're my safest place."},
+  {id:7,color:"pink",text:"You make me laugh effortlessly."},
+  {id:8,color:"pink",text:"Your kindness inspires me."},
+  {id:9,color:"pink",text:"You accept me exactly as I am."},
+  {id:10,color:"pink",text:"You make my world softer."},
+  {id:11,color:"pink",text:"You make love feel easy."},
+  {id:12,color:"pink",text:"Your voice calms my mind."},
+  {id:13,color:"pink",text:"You choose me every day."},
+  {id:14,color:"pink",text:"You make me feel wanted."},
+  {id:15,color:"pink",text:"You make silence comfortable."},
+  {id:16,color:"pink",text:"You bring warmth wherever you go."},
+  {id:17,color:"pink",text:"You're patient with my flaws."},
+  {id:18,color:"pink",text:"You make me feel lucky."},
+  {id:19,color:"pink",text:"You love me genuinely."},
+  {id:20,color:"pink",text:"You are my favorite thought."},
+  {id:21,color:"pink",text:"You make my heart feel full."},
+  {id:22,color:"pink",text:"You make me feel chosen."},
+  {id:23,color:"pink",text:"You show love in little ways."},
+  {id:24,color:"pink",text:"You make life brighter."},
+  {id:25,color:"pink",text:"You are my forever reason."},
+
+  // 💙 We're Doing This (25)
+  {id:26,color:"blue",text:"I'm not going anywhere."},
+  {id:27,color:"blue",text:"I choose you, always."},
+  {id:28,color:"blue",text:"We're stronger together."},
+  {id:29,color:"blue",text:"I'm here through every storm."},
+  {id:30,color:"blue",text:"I believe in us."},
+  {id:31,color:"blue",text:"We grow, not give up."},
+  {id:32,color:"blue",text:"This is worth fighting for."},
+  {id:33,color:"blue",text:"I'll hold your hand through it all."},
+  {id:34,color:"blue",text:"We are a team."},
+  {id:35,color:"blue",text:"I choose patience with you."},
+  {id:36,color:"blue",text:"We'll figure it out together."},
+  {id:37,color:"blue",text:"I'm committed to us."},
+  {id:38,color:"blue",text:"We're building something real."},
+  {id:39,color:"blue",text:"I'm staying."},
+  {id:40,color:"blue",text:"I won't walk away."},
+  {id:41,color:"blue",text:"You're worth the effort."},
+  {id:42,color:"blue",text:"We're learning together."},
+  {id:43,color:"blue",text:"I choose you even on hard days."},
+  {id:44,color:"blue",text:"Our story matters."},
+  {id:45,color:"blue",text:"We are growing together."},
+  {id:46,color:"blue",text:"I trust what we're building."},
+  {id:47,color:"blue",text:"We keep choosing love."},
+  {id:48,color:"blue",text:"I'm invested in us."},
+  {id:49,color:"blue",text:"We're not giving up."},
+  {id:50,color:"blue",text:"This is us."},
+
+  // 💚 Quotes & Lyrics (25)
+  {id:51,color:"green",text:"Loving you is my favorite habit."},
+  {id:52,color:"green",text:"You are my today and all my tomorrows."},
+  {id:53,color:"green",text:"Love grows where patience lives."},
+  {id:54,color:"green",text:"With you, I am home."},
+  {id:55,color:"green",text:"Love is choosing each other daily."},
+  {id:56,color:"green",text:"You make my soul smile."},
+  {id:57,color:"green",text:"Where you are is where I belong."},
+  {id:58,color:"green",text:"You are my calm in chaos."},
+  {id:59,color:"green",text:"Love is found in the little things."},
+  {id:60,color:"green",text:"You feel like peace."},
+  {id:61,color:"green",text:"Forever starts with today."},
+  {id:62,color:"green",text:"You make my heart sing."},
+  {id:63,color:"green",text:"Love is built, not found."},
+  {id:64,color:"green",text:"You are my favorite place."},
+  {id:65,color:"green",text:"Every love story is beautiful, ours is my favorite."},
+  {id:66,color:"green",text:"You are my always."},
+  {id:67,color:"green",text:"Love lives in consistency."},
+  {id:68,color:"green",text:"You make life poetic."},
+  {id:69,color:"green",text:"You are my safe harbor."},
+  {id:70,color:"green",text:"Love feels gentle with you."},
+  {id:71,color:"green",text:"You are my person."},
+  {id:72,color:"green",text:"You make everything softer."},
+  {id:73,color:"green",text:"Love grows slowly and surely."},
+  {id:74,color:"green",text:"You are my favorite melody."},
+  {id:75,color:"green",text:"With you, love feels right."},
+
+  // 💛 Memories (25)
+  {id:76,color:"yellow",text:"That first smile still lives in my head."},
+  {id:77,color:"yellow",text:"The way you looked at me that day."},
+  {id:78,color:"yellow",text:"Our first long conversation."},
+  {id:79,color:"yellow",text:"The laugh we couldn't stop."},
+  {id:80,color:"yellow",text:"That quiet moment together."},
+  {id:81,color:"yellow",text:"The first time you held my hand."},
+  {id:82,color:"yellow",text:"That unexpected hug."},
+  {id:83,color:"yellow",text:"Our silly inside jokes."},
+  {id:84,color:"yellow",text:"That walk we still talk about."},
+  {id:85,color:"yellow",text:"The way time disappeared with you."},
+  {id:86,color:"yellow",text:"That message I reread."},
+  {id:87,color:"yellow",text:"The comfort of sitting beside you."},
+  {id:88,color:"yellow",text:"That look that said everything."},
+  {id:89,color:"yellow",text:"Our shared silence."},
+  {id:90,color:"yellow",text:"That late-night conversation."},
+  {id:91,color:"yellow",text:"The moment I knew."},
+  {id:92,color:"yellow",text:"That song that reminds me of you."},
+  {id:93,color:"yellow",text:"The smile you gave without trying."},
+  {id:94,color:"yellow",text:"That ordinary day made special."},
+  {id:95,color:"yellow",text:"Our favorite place together."},
+  {id:96,color:"yellow",text:"That memory that still warms me."},
+  {id:97,color:"yellow",text:"The way you said my name."},
+  {id:98,color:"yellow",text:"That moment we both smiled."},
+  {id:99,color:"yellow",text:"The comfort of us."},
+  {id:100,color:"yellow",text:"That feeling that never faded."}
+];
+
+
+function today(){return new Date().toISOString().split("T")[0];}
+function go(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+async function init(){
+ const ref=db.collection("users").doc(USER_ID);
+ const snap=await ref.get();
+ if(!snap.exists){
+  await ref.set({openedIntro:false,lastOpened:null,available:notes,opened:[]});
+ }
+ checkToday();
+}
+init();
+
+async function openJar(){
+ await db.collection("users").doc(USER_ID).update({openedIntro:true});
+ go("home");
+ checkToday();
+}
+
+async function checkToday(){
+ const d=(await db.collection("users").doc(USER_ID).get()).data();
+
+ remainingCount.innerText=`💌 ${d.available.length} notes still waiting for you`;
+
+ categoryPick.style.display="none";
+ lockedMsg.style.display="none";
+ viewBtn.style.display="none";
+
+ if(d.lastOpened===today()){
+   lockedMsg.style.display="block";
+   viewBtn.style.display="block";
+ }else{
+   categoryPick.style.display="flex";
+ }
+}
+
+async function pickByCategory(color){
+ const ref=db.collection("users").doc(USER_ID);
+ const d=(await ref.get()).data();
+
+ if(d.lastOpened===today()) return;
+
+ const options=d.available.filter(n=>n.color===color);
+
+ // Empty category
+ if(options.length===0){
+   todayNote.innerHTML=`
+    <div class="note reveal-fade">
+      <div class="hearts-top-left"></div>
+      <div class="hearts-bottom-right"></div>
+      <div class="note-text">
+        💕 This heart is empty now.<br>
+        Try another one 💖
+      </div>
+    </div>`;
+   categoryPick.style.display="flex";
+   return;
+ }
+
+ const note=options[Math.floor(Math.random()*options.length)];
+ const anims=["reveal-fade","reveal-heart","reveal-glow","reveal-float"];
+ const anim=anims[new Date().getDate() % anims.length];
+
+ await ref.update({
+  lastOpened:today(),
+  available:d.available.filter(n=>n.id!==note.id),
+  opened:[...d.opened,{...note,date:today()}]
+});
+
+todayNote.innerHTML=`
+ <div class="note ${note.color} ${anim}">
+   <div class="hearts-top-left"></div>
+   <div class="hearts-bottom-right"></div>
+   <div class="note-text" id="typed"></div>
+ </div>`;
+
+categoryPick.style.display="none";
+backAfterRead.style.display="block";
+typeText(note.text);
+
+// ✅ ONLY reduce remaining count
+remainingCount.innerText =
+ `💌 ${d.available.length - 1} notes still waiting for you`;
+}
+
+
+function typeText(text){
+ let i=0;
+ const el=document.getElementById("typed");
+ el.textContent="";
+ const timer=setInterval(()=>{
+   el.textContent+=text.charAt(i);
+   i++;
+   if(i>=text.length) clearInterval(timer);
+ },45);
+}
+
+function backAfterReading(){
+ todayNote.innerHTML="";
+ backAfterRead.style.display="none";
+ go("intro");
+}
+
+const categoryMap = {
+  pink: "🩷 Reasons I Love You",
+  blue: "💙 We're Doing This",
+  green: "💚 Quotes & Lyrics",
+  yellow: "💛 Memories"
+};
+
+async function openCategory(color){
+ const d = (await db.collection("users").doc(USER_ID).get()).data();
+ listNotes.innerHTML = "";
+
+ d.opened
+  .filter(n => n.color === color)
+  .forEach(n => {
+    listNotes.innerHTML += `
+      <div class="note reveal-fade ${n.color}">
+        <div class="hearts-top-left"></div>
+        <div class="hearts-bottom-right"></div>
+        <div class="note-text">
+          <small>${n.date}</small><br>
+          ${n.text}
+        </div>
+      </div>`;
+  });
+
+ listTitle.innerText = categoryMap[color];
+ go("list");
+}
+
+</script>
+
+</body>
+</html>
