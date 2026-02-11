@@ -720,13 +720,24 @@ function typeText(text){
   let i = 0;
   const el = document.getElementById("typed");
   el.innerHTML = "";
-  
+
   const timer = setInterval(() => {
-    el.innerHTML += text.charAt(i);
-    i++;
+
+    // If it's the start of an HTML tag
+    if (text[i] === "<") {
+      const closeIndex = text.indexOf(">", i);
+      el.innerHTML += text.slice(i, closeIndex + 1);
+      i = closeIndex + 1;
+    } else {
+      el.innerHTML += text[i];
+      i++;
+    }
+
     if (i >= text.length) clearInterval(timer);
+
   }, 45);
 }
+
 
 
 function backAfterReading(){
@@ -768,5 +779,6 @@ async function openCategory(color){
 
 </body>
 </html>
+
 
 
