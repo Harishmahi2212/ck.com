@@ -717,15 +717,17 @@ remainingCount.innerText =
 
 
 function typeText(text){
- let i=0;
- const el=document.getElementById("typed");
- el.textContent="";
- const timer=setInterval(()=>{
-   el.textContent+=text.charAt(i);
-   i++;
-   if(i>=text.length) clearInterval(timer);
- },45);
+  let i = 0;
+  const el = document.getElementById("typed");
+  el.innerHTML = "";
+  
+  const timer = setInterval(() => {
+    el.innerHTML += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(timer);
+  }, 45);
 }
+
 
 function backAfterReading(){
  todayNote.innerHTML="";
@@ -766,4 +768,5 @@ async function openCategory(color){
 
 </body>
 </html>
+
 
