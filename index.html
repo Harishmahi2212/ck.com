@@ -543,47 +543,35 @@ async function openCategory(color) {
   const d = (await db.collection("users").doc(USER_ID).get()).data();
   listNotes.innerHTML = "";
 
-  // ✅ Get current date in yyyy/mm/dd
-  const now = new Date();
-  const today = now.getFullYear() + "/" +
-                String(now.getMonth() + 1).padStart(2, "0") + "/" +
-                String(now.getDate()).padStart(2, "0");
-
-  // ✅ First, add a new note with today's date at the top
-  listNotes.innerHTML += `
-    <div class="note reveal-fade ${color}">
-      <div class="hearts-top-left"></div>
-      <div class="hearts-bottom-right"></div>
-      <div class="note-text">
-        <small>${today}</small><br>
-        New note content here
-      </div>
-    </div>`;
-
-  // ✅ Then, add the existing notes filtered by color
-  d.opened
+  // ✅ Sort notes so newest first (assuming n.date is in yyyy/mm/dd)
+  const notes = d.opened
     .filter(n => n.color === color)
-    .forEach(n => {
-      listNotes.innerHTML += `
-        <div class="note reveal-fade ${n.color}">
-          <div class="hearts-top-left"></div>
-          <div class="hearts-bottom-right"></div>
-          <div class="note-text">
-            <small>${n.date}</small><br>
-            ${n.text}
-          </div>
-        </div>`;
-    });
+    .sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
+
+  // ✅ Add notes to DOM
+  notes.forEach(n => {
+    listNotes.innerHTML += `
+      <div class="note reveal-fade ${n.color}">
+        <div class="hearts-top-left"></div>
+        <div class="hearts-bottom-right"></div>
+        <div class="note-text">
+          <small>${n.date}</small><br>
+          ${n.text}
+        </div>
+      </div>`;
+  });
 
   listTitle.innerText = categoryMap[color];
   go("list");
 }
 
 
+
 </script>
 
 </body>
 </html>
+
 
 
 
