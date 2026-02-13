@@ -543,13 +543,13 @@ async function openCategory(color) {
   const d = (await db.collection("users").doc(USER_ID).get()).data();
   listNotes.innerHTML = "";
 
-  // ✅ Sort notes so newest first (assuming n.date is in yyyy/mm/dd)
-  // const notes = d.opened
-  //   .filter(n => n.color === color)
-  //   .sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
+  ✅ Sort notes so newest first (assuming n.date is in yyyy/mm/dd)
+  const NewNote = d.opened
+    .filter(n => n.color === color)
+    .sort((a, b) => new Date(b.date) - new Date(a.date)); // newest first
 
   // ✅ Add notes to DOM
-  notes.forEach(n => {
+  NewNote.forEach(n => {
     listNotes.innerHTML += `
       <div class="note reveal-fade ${n.color}">
         <div class="hearts-top-left"></div>
@@ -571,6 +571,7 @@ async function openCategory(color) {
 
 </body>
 </html>
+
 
 
 
