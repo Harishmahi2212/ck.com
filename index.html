@@ -539,27 +539,30 @@ const categoryMap = {
   yellow: "💛 Memories"
 };
 
-async function openCategory(color){
- const d = (await db.collection("users").doc(USER_ID).get()).data();
- listNotes.innerHTML = "";
+async function openCategory(color) {
+  const d = (await db.collection("users").doc(USER_ID).get()).data();
+  listNotes.innerHTML = "";
 
- d.opened
-  .filter(n => n.color === color)
-  .forEach(n => {
-    listNotes.innerHTML += `
-      <div class="note reveal-fade ${n.color}">
-        <div class="hearts-top-left"></div>
-        <div class="hearts-bottom-right"></div>
-        <div class="note-text">
-          <small>${n.date}</small><br>
-          ${n.text}
-        </div>
-      </div>`;
-  });
+  d.opened
+    .filter(n => n.color === color)
+    // ✅ Sort by date descending (newest first)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .forEach(n => {
+      listNotes.innerHTML += `
+        <div class="note reveal-fade ${n.color}">
+          <div class="hearts-top-left"></div>
+          <div class="hearts-bottom-right"></div>
+          <div class="note-text">
+            <small>${n.date}</small><br>
+            ${n.text}
+          </div>
+        </div>`;
+    });
 
- listTitle.innerText = categoryMap[color];
- go("list");
+  listTitle.innerText = categoryMap[color];
+  go("list");
 }
+
 
 
 
@@ -568,6 +571,7 @@ async function openCategory(color){
 
 </body>
 </html>
+
 
 
 
